@@ -8,11 +8,24 @@ Kidney stone composition analysis is crucial for determining appropriate treatme
 
 ## Architecture
 
+### USCNet Framework
+
 The proposed framework consists of two main components:
 
 1. **SC_Net (Segmentation and Classification Network)**: A hybrid architecture combining 3D ResNet encoder with Vision Transformer for simultaneous kidney stone segmentation and composition classification.
 
 2. **TMSS (Triple-Module Segmentation System)**: A multi-task learning framework that integrates image features with clinical data (EHR) for improved classification performance.
+
+![USCNet Architecture](figures/框架图.png)
+
+### Key Modules
+
+- **(a) Visual and Textual Transformation (VTT)**: Converts CT images and clinical text data into unified representations
+- **(b) ViT-UNetSeg Module**: Vision Transformer-based segmentation with U-Net decoder
+- **(c) MSAF Feature Fusion Module**: Multi-modal feature fusion between CT and EHR data
+- **(d) Classification Module**: Final classification head for stone type prediction
+- **(e) Transformer Encoder Block**: Standard transformer encoder with MSA and MLP
+- **(f) Cross-Attention CEA/SMA Principle**: Cross-modal attention mechanism
 
 ## Project Structure
 
@@ -21,6 +34,7 @@ The proposed framework consists of two main components:
 ├── configs/
 │   ├── config.yaml          # Validation and metrics configuration
 │   └── dataset.json         # Dataset paths and settings
+├── figures/                 # Result figures and visualizations
 ├── src/
 │   ├── dataloader/
 │   │   └── load_data.py     # Data loading and preprocessing
@@ -34,6 +48,8 @@ The proposed framework consists of two main components:
 ├── train.py                 # Training script
 ├── test.py                  # Testing/Inference script
 ├── trainer.py               # Trainer class implementation
+├── inference.py             # Inference script for new data
+├── prepare_dataset.py       # Dataset preparation tools
 ├── auc.py                   # AUC evaluation and visualization
 ├── TMSS.py                  # Triple-Module Segmentation System
 └── utils.py                 # Utility functions
@@ -125,16 +141,44 @@ python test.py \
     --batch-size 8
 ```
 
-### AUC Evaluation
+### Inference on New Data
 
-To generate ROC curves and calculate AUC metrics:
+For single image:
 
 ```bash
-python auc.py \
-    --model_name USCNet \
+python inference.py \
     --checkpoint path/to/best_checkpoint.pth \
-    --output_dir ./results
+    --input /path/to/image.nii.gz \
+    --output /path/to/segmentation.nii.gz
 ```
+
+## Results
+
+### Performance Comparison
+
+USCNet achieves state-of-the-art performance compared to baseline methods:
+
+| Method | AUC |
+|--------|-----|
+| SegPrompt | 0.5270 |
+| ResNet50 | 0.5928 |
+| ResNet34 | 0.6223 |
+| ResNet101 | 0.6248 |
+| TMSS | 0.8290 |
+| HyMNet | 0.9053 |
+| **USCNet (Ours)** | **0.9495** |
+
+### ROC Curve
+
+![ROC Curve](figures/roc.png)
+
+The ROC curve demonstrates that USCNet significantly outperforms other methods in kidney stone composition classification.
+
+### Threshold Sensitivity Analysis
+
+![Threshold Sensitivity Analysis](figures/阈值过敏性分析.png)
+
+The dynamic loss function achieves optimal performance at a Dice threshold of 0.8, with an accuracy of 91.91%.
 
 ## Model Details
 
@@ -152,6 +196,7 @@ SC_Net consists of:
 2. **Attention Gates**: Channel and spatial attention for better feature fusion
 3. **Skip Connections**: Preserve spatial information from encoder to decoder
 4. **Clinical Integration**: Optional EHR data fusion (in TMSS)
+5. **Dynamic Loss**: Adaptive threshold for improved training stability
 
 ## Citation
 
