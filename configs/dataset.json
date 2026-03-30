@@ -1,0 +1,8 @@
+{
+  "data_dir": "D:/zsq/dataset/KidneyStone",
+  "infos_name": "clinical_infos_0220.json",
+  "img_dir": "cropped_img",
+  "mask_dir": "cropped_mask",
+  "filter_volume": 0.006,
+  "clinical_dir": "clinical.xlsx"
+}

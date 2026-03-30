@@ -1,0 +1,10 @@
+VALIDATION:
+  metrics:
+    cla:
+      - sklearn.metrics.accuracy_score
+    seg:
+      - _target_: monai.metrics.DiceMetric
+
+  save_best_metric:
+    - accuracy_score
+    - DiceMetric
